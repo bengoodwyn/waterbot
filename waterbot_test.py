@@ -11,4 +11,4 @@ def client():
 
 def test_empty_db(client):
     rv = client.get('/')
-    assert b'waterbot' in rv.data
+    assert b'<title>Waterbot</title>' in rv.data

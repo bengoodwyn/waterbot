@@ -1,0 +1,21 @@
+{
+  "zones": {
+    "Example Zone 1": {
+      "gpio": 1,
+      "minutes": 10
+    },
+    "Example Zone 2": {
+      "gpio": 2,
+      "minutes": 20
+    },
+    "Example Zone 3": {
+      "gpio": 3,
+      "minutes": 30
+    },
+    "Example Zone 4": {
+      "gpio": 4,
+      "minutes": 40
+    }
+  },
+  "common_gpio": 0
+}

@@ -28,3 +28,30 @@ def test_mode_in_handles_errors(mock_system):
     with pytest.raises(Exception):
         gpio.mode_in(5)
     mock_system.assert_called_once_with("gpio mode 5 in")
+
+@patch("os.system")
+def test_on(mock_system):
+    mock_system.return_value = 0
+    gpio.on(3)
+    mock_system.assert_called_once_with("gpio write 3 0")
+
+@patch("os.system")
+def test_on_handles_errors(mock_system):
+    mock_system.return_value = 1
+    with pytest.raises(Exception):
+        gpio.on(3)
+    mock_system.assert_called_once_with("gpio write 3 0")
+
+@patch("os.system")
+def test_off(mock_system):
+    mock_system.return_value = 0
+    gpio.off(2)
+    mock_system.assert_called_once_with("gpio write 2 1")
+
+@patch("os.system")
+def test_off_handles_errorrs(mock_system):
+    mock_system.return_value = 1
+    with pytest.raises(Exception):
+        gpio.off(2)
+    mock_system.assert_called_once_with("gpio write 2 1")
+

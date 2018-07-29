@@ -11,3 +11,11 @@ def mode_out(pin):
 def mode_in(pin):
     cmd = f"gpio mode {pin} in"
     __run_or_die(cmd)
+
+def on(pin):
+    cmd = f"gpio write {pin} 0"
+    __run_or_die(cmd)
+
+def off(pin):
+    cmd = f"gpio write {pin} 1"
+    __run_or_die(cmd)

@@ -1,13 +1,19 @@
 import pytest
 import json
-import waterbot_web
 import db
+import waterbot_web
 
-@pytest.fixture
+@pytest.yield_fixture(scope="function")
 def client():
     waterbot_web.app.config['TESTING'] = True
+    ctx = waterbot_web.app.app_context()
+    ctx.push()
+
     client = waterbot_web.app.test_client()
+    client.post('/api/v0/water-zone/4/77')
     yield client
+
+    ctx.pop()
 
 def test_index_get(client):
     rv = client.get('/')
@@ -45,150 +51,103 @@ def test_zone_get(client):
     assert(response["name"] == "Example Zone 2")
     assert(response["seconds"] == 1200)
 
-def test_zone_get(client):
+def test_zone_post(client):
     rv = client.post('/api/v0/zone/3')
     assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response["name"] == "Example Zone 3")
     assert(response["seconds"] == 1800)
 
-def test_tasks_get(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_tasks = mocker.patch("db.tasks")
-    waterbot_web.get_db.return_value = "foo"
-    db.tasks.return_value = [{"key":"value"}]
-
-    rv = client.get('/api/v0/tasks')
-    assert(rv.status_code == 200)
-    response = json.loads(rv.data)
-    assert(response[0]["key"] == "value")
-    stub_tasks.assert_called_once_with("foo")
-
-def test_tasks_post(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_tasks = mocker.patch("db.tasks")
-    waterbot_web.get_db.return_value = "foo"
-    db.tasks.return_value = [{"key":"value"}]
-
-    rv = client.get('/api/v0/tasks')
-    assert(rv.status_code == 200)
-    response = json.loads(rv.data)
-    assert(response[0]["key"] == "value")
-    stub_tasks.assert_called_once_with("foo")
-
-def test_task_get(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_task = mocker.patch("db.task")
-    waterbot_web.get_db.return_value = "foo"
-    db.task.return_value = [{"key":"value"}]
-
-    rv = client.get('/api/v0/task/17')
-    assert(rv.status_code == 200)
-    response = json.loads(rv.data)
-    assert(response["key"] == "value")
-    stub_task.assert_called_once_with("foo", 17)
-
-def test_task_post(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_task = mocker.patch("db.task")
-    waterbot_web.get_db.return_value = "foo"
-    db.task.return_value = [{"key":"value"}]
-
-    rv = client.post('/api/v0/task/17')
-    assert(rv.status_code == 200)
-    response = json.loads(rv.data)
-
-    assert(response["key"] == "value")
-    stub_task.assert_called_once_with("foo", 17)
-
-def test_task_not_found(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_task = mocker.patch("db.task")
-    waterbot_web.get_db.return_value = "foo"
-    db.task.return_value = []
-
-    rv = client.post('/api/v0/task/17')
+def test_zone_not_found(client):
+    rv = client.get('/api/v0/zone/999')
     assert(rv.status_code == 404)
     response = json.loads(rv.data)
+    assert("error" in response)
 
-    assert("not found" in response["error"])
-    stub_task.assert_called_once_with("foo", 17)
-
-def test_cancel_task(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_cancel_task = mocker.patch("db.task_terminate")
-    stub_task = mocker.patch("db.task")
-    waterbot_web.get_db.return_value = "foo"
-    db.task_terminate.return_value = 1
-    db.task.return_value = [{"task_id":17}]
-
-    rv = client.post('/api/v0/cancel-task/17')
+def test_tasks_get(client):
+    rv = client.get('/api/v0/tasks')
     assert(rv.status_code == 200)
     response = json.loads(rv.data)
+    assert(response[0]["zone_id"] == 4)
+    assert(response[0]["seconds"] == 77)
 
-    assert(response["task_id"] == 17)
-    stub_cancel_task.assert_called_once_with("foo", 17)
-    stub_task.assert_called_once_with("foo", 17)
+def test_tasks_post(client):
+    rv = client.post('/api/v0/tasks')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data)
+    assert(response[0]["zone_id"] == 4)
+    assert(response[0]["seconds"] == 77)
 
-def test_cancel_task_with_no_effect(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_cancel_task = mocker.patch("db.task_terminate")
-    waterbot_web.get_db.return_value = "foo"
-    db.task_terminate.return_value = 0
+def test_task_get(client):
+    rv = client.get('/api/v0/task/1')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data)
+    assert(response["zone_id"] == 4)
+    assert(response["seconds"] == 77)
 
-    rv = client.post('/api/v0/cancel-task/17')
+def test_task_post(client):
+    rv = client.post('/api/v0/task/1')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data)
+    assert(response["zone_id"] == 4)
+    assert(response["seconds"] == 77)
+
+def test_task_not_found(client):
+    rv = client.get('/api/v0/task/999')
+    assert(rv.status_code == 404)
+    response = json.loads(rv.data)
+    assert("error" in response)
+
+def test_cancel_task(client):
+    rv = client.post('/api/v0/cancel-task/1')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data)
+    assert(response["zone_id"] == 4)
+    assert(response["seconds"] == 77)
+    assert(response["ts_terminated"] > 0)
+
+def test_cancel_task_not_found(client):
+    rv = client.post('/api/v0/cancel-task/999')
+    assert(rv.status_code == 404)
+    response = json.loads(rv.data)
+    assert("error" in response)
+
+def test_cancel_task_already_canceled(client):
+    client.post('/api/v0/cancel-task/1')
+    rv = client.post('/api/v0/cancel-task/1')
     assert(rv.status_code == 409)
     response = json.loads(rv.data)
+    assert("error" in response)
 
-    assert("not changed" in response["error"])
-    stub_cancel_task.assert_called_once_with("foo", 17)
-
-def test_water_zone(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_water_zone = mocker.patch("db.water_zone")
-    stub_task = mocker.patch("db.task")
-    waterbot_web.get_db.return_value = "foo"
-    db.water_zone.return_value = (1, 99)
-    db.task.return_value = [{"task_id":99}]
-
-    rv = client.post('/api/v0/water-zone/4/99')
+def test_water_zone(client):
+    rv = client.post('/api/v0/water-zone/3/33')
     assert(rv.status_code == 201)
     response = json.loads(rv.data)
+    assert(response["zone_id"] == 3)
+    assert(response["seconds"] == 33)
 
-    assert(response["task_id"] == 99)
-    stub_water_zone.assert_called_once_with("foo", 4, 99)
-    stub_task.assert_called_once_with("foo", 99)
-
-def test_water_zone_error(client, mocker):
-    stub_get_db = mocker.patch("waterbot_web.get_db")
-    stub_water_zone = mocker.patch("db.water_zone")
-    waterbot_web.get_db.return_value = "foo"
+def test_water_zone_not_created(client, mocker):
+    mocker.patch("db.water_zone")
     db.water_zone.return_value = (0, None)
-
-    rv = client.post('/api/v0/water-zone/4/99')
+    rv = client.post('/api/v0/water-zone/3/33')
     assert(rv.status_code == 500)
     response = json.loads(rv.data)
+    assert("error" in response)
 
-    assert("Failed to create task" in response["error"])
-    stub_water_zone.assert_called_once_with("foo", 4, 99)
-
-def test_water_zone_does_not_exist(client, mocker):
+def test_water_zone_does_not_exist(client):
     rv = client.post('/api/v0/water-zone/5/99')
     assert(rv.status_code == 404)
     response = json.loads(rv.data)
+    assert("error" in response)
 
-    assert("not known" in response["error"])
-
-def test_water_zone_too_short(client, mocker):
+def test_water_zone_too_short(client):
     rv = client.post('/api/v0/water-zone/4/0')
     assert(rv.status_code == 400)
     response = json.loads(rv.data)
+    assert("error" in response)
 
-    assert("less than one second" in response["error"])
-
-def test_water_zone_too_long(client, mocker):
+def test_water_zone_too_long(client):
     rv = client.post('/api/v0/water-zone/4/3601')
     assert(rv.status_code == 400)
     response = json.loads(rv.data)
-
-    assert("longer than one hour" in response["error"])
+    assert("error" in response)

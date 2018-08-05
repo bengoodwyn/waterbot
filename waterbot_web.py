@@ -1,23 +1,20 @@
 import json
-import db
+from waterbot_api import *
 from flask import Flask, render_template, jsonify, g
 
 app = Flask(__name__)
 
-with open('.config.json') as f:
-    app.config['WATERBOT'] = json.load(f)
-
-def get_db():
-    database = getattr(g, '_database', None)
-    if database is None:
-        database = g._database = db.get_db('waterbot.db')
-    return database
+def get_api():
+    api = getattr(g, '_api', None)
+    if api is None:
+        config_filename = '.config.json' if app.config['TESTING'] else 'config.json'
+        database_filename = ':memory:' if app.config['TESTING'] else 'waterbot.db'
+        api = g._api = WaterbotApi(config_filename=config_filename, database_filename=database_filename)
+    return api
 
 @app.teardown_appcontext
-def teardown_db(exception):
-    database = getattr(g, '_database', None)
-    if database is not None:
-        database.close()
+def teardown_api(exception):
+    api = None
 
 @app.route('/', methods=['GET'])
 def index():
@@ -25,49 +22,52 @@ def index():
 
 @app.route('/api/v0/config', methods=["GET","POST"])
 def config_v0():
-    return jsonify(app.config['WATERBOT'])
+    return jsonify(get_api().config)
 
 @app.route('/api/v0/zones', methods=["GET","POST"])
 def zones_v0():
-    return jsonify(app.config['WATERBOT']['zones'])
+    return jsonify(get_api().zones())
 
 @app.route('/api/v0/zone/<int:zone_id>', methods=["GET","POST"])
 def zone(zone_id):
-    if str(zone_id) not in app.config['WATERBOT']['zones']:
-        return jsonify({"error":f"Zone {zone} not known"}), 404
-    return jsonify(app.config['WATERBOT']['zones'][str(zone_id)])
+    try:
+        zone = get_api().zone(zone_id)
+        return jsonify(zone)
+    except ZoneNotFound as e:
+        return jsonify({"error":str(e)}), 404
 
 @app.route('/api/v0/tasks', methods=["GET","POST"])
 def tasks_v0():
-    conn = get_db()
-    return jsonify(db.tasks(conn))
+    return jsonify(get_api().tasks())
 
 @app.route('/api/v0/task/<int:task_id>', methods=["GET","POST"])
 def task_v0(task_id):
-    conn = get_db()
-    result = db.task(conn, task_id)
-    if 1 == len(result):
-        return jsonify(result[0])
-    return jsonify({"error":f"Task {task_id} not found"}), 404
+    try:
+        task = get_api().task(task_id)
+        return jsonify(task)
+    except TaskNotFound as e:
+        return jsonify({"error":str(e)}), 404
 
 @app.route('/api/v0/cancel-task/<int:task_id>', methods=["POST"])
 def cancel_task_v0(task_id):
-    conn = get_db()
-    rowcount = db.task_terminate(conn, task_id)
-    if 1 == rowcount:
-        return task_v0(task_id)
-    return jsonify({"error":f"Task {task_id} not changed"}), 409
+    try:
+        get_api().terminate_task(task_id)
+        return jsonify(get_api().task(task_id))
+    except TaskNotFound as e:
+        return jsonify({"error":str(e)}), 404
+    except TaskAlreadyTerminated as e:
+        return jsonify({"error":str(e)}), 409
 
 @app.route('/api/v0/water-zone/<int:zone_id>/<int:seconds>', methods=["POST"])
 def water_zone_v0(zone_id, seconds):
-    if str(zone_id) not in app.config['WATERBOT']['zones']:
-        return jsonify({"error":f"Zone {zone_id} not known"}), 404
-    if seconds < 1:
-        return jsonify({"error":f"{seconds} seconds is less than one second"}), 400
-    if seconds > 3600:
-        return jsonify({"error":f"{seconds} seconds is longer than one hour"}), 400
-    conn = get_db()
-    rowcount, task_id = db.water_zone(conn, zone_id, seconds)
-    if 1 == rowcount:
-        return task_v0(task_id), 201
-    return jsonify({"error":f"Failed to create task for {zone_id}"}), 500
+    try:
+        task = get_api().water_zone(zone_id, seconds)
+        return jsonify(task), 201
+    except ZoneNotFound as e:
+        return jsonify({"error":str(e)}), 404
+    except TooLong as e:
+        return jsonify({"error":str(e)}), 400
+    except TooShort as e:
+        return jsonify({"error":str(e)}), 400
+    except TaskNotCreated as e:
+        return jsonify({"error":str(e)}), 500

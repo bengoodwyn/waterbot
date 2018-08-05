@@ -1,6 +1,6 @@
 import pytest
 import waterbot_api
-import db
+import waterbot_db
 
 @pytest.fixture
 def api():
@@ -61,8 +61,8 @@ def test_water_zone(api):
     assert(task["ts_terminated"] == None)
 
 def test_water_zone_error(api, mocker):
-    mocker.patch("db.water_zone")
-    db.water_zone.return_value = (0, None)
+    mocker.patch("waterbot_db.water_zone")
+    waterbot_db.water_zone.return_value = (0, None)
     with pytest.raises(waterbot_api.TaskNotCreated):
         api.water_zone(2, 600)
 

@@ -1,6 +1,6 @@
 import pytest
 import json
-import db
+import waterbot_db
 import waterbot_web
 
 @pytest.yield_fixture(scope="function")
@@ -127,8 +127,8 @@ def test_water_zone(client):
     assert(response["seconds"] == 33)
 
 def test_water_zone_not_created(client, mocker):
-    mocker.patch("db.water_zone")
-    db.water_zone.return_value = (0, None)
+    mocker.patch("waterbot_db.water_zone")
+    waterbot_db.water_zone.return_value = (0, None)
     rv = client.post('/api/v0/water-zone/3/33')
     assert(rv.status_code == 500)
     response = json.loads(rv.data)

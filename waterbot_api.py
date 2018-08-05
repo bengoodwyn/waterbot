@@ -1,5 +1,5 @@
 import json
-import db
+import waterbot_db
 
 class ZoneNotFound(Exception):
     def __init__(self, zone_id):
@@ -38,7 +38,7 @@ class WaterbotApi:
     def __init__(self, config_filename='.config.json', database_filename='waterbot.db'):
         with open(config_filename) as f:
             self.config = json.load(f)
-        self.conn = db.get_db(database_filename)
+        self.conn = waterbot_db.get_db(database_filename)
 
     def __del__(self):
         if self.conn:
@@ -54,17 +54,17 @@ class WaterbotApi:
         return all_zones[str(zone_id)]
 
     def tasks(self):
-        return db.tasks(self.conn)
+        return waterbot_db.tasks(self.conn)
 
     def task(self, task_id):
-        tasks = db.task(self.conn, task_id)
+        tasks = waterbot_db.task(self.conn, task_id)
         if len(tasks) != 1:
             raise TaskNotFound(task_id)
         return tasks[0]
 
     def terminate_task(self, task_id):
         self.task(task_id)
-        if 1 != db.task_terminate(self.conn, task_id):
+        if 1 != waterbot_db.task_terminate(self.conn, task_id):
             raise TaskAlreadyTerminated(task_id)
         return self.task(task_id)
 
@@ -79,7 +79,7 @@ class WaterbotApi:
     def water_zone(self, zone_id, seconds):
         self.__validate_watering_time(seconds)
         self.zone(zone_id)
-        rowsaffected, task_id = db.water_zone(self.conn, zone_id, seconds)
+        rowsaffected, task_id = waterbot_db.water_zone(self.conn, zone_id, seconds)
         if 1 != rowsaffected:
             raise TaskNotCreated(zone_id, seconds)
         return self.task(task_id)

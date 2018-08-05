@@ -35,7 +35,7 @@ class TaskNotCreated(Exception):
         self.seconds = seconds
 
 class WaterbotApi:
-    def __init__(self, config_filename='.config.json', database_filename='waterbot.db'):
+    def __init__(self, config_filename='config.json', database_filename='waterbot.db'):
         with open(config_filename) as f:
             self.config = json.load(f)
         self.conn = waterbot_db.get_db(database_filename)

@@ -7,7 +7,7 @@ app = Flask(__name__)
 def get_api():
     api = getattr(g, '_api', None)
     if api is None:
-        config_filename = '.config.json' if app.config['TESTING'] else 'config.json'
+        config_filename = 'test_config.json' if app.config['TESTING'] else 'config.json'
         database_filename = ':memory:' if app.config['TESTING'] else 'waterbot.db'
         api = g._api = WaterbotApi(config_filename=config_filename, database_filename=database_filename)
     return api

@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("water_worker")
 
 config = None
-with open('.config.json') as f:
+with open('config.json') as f:
     config = json.load(f)
 common = config["common_gpio"]
 

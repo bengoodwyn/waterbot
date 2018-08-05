@@ -4,7 +4,7 @@ import waterbot_db
 
 @pytest.fixture
 def api():
-    yield waterbot_api.WaterbotApi(config_filename='.config.json', database_filename=':memory:')
+    yield waterbot_api.WaterbotApi(config_filename='test_config.json', database_filename=':memory:')
 
 def test_config(api):
     assert("common_gpio" in api.config)

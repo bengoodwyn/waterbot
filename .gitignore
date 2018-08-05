@@ -106,3 +106,4 @@ venv.bak/
 # Swap files
 *.swp
 waterbot.db
+config.json

@@ -25,6 +25,14 @@ def test_tasks(api):
     assert(tasks[0]["zone_id"] == 1)
     assert(tasks[0]["seconds"] == 120)
 
+def test_pending_tasks(api):
+    api.water_zone(1, 120)
+    tasks = api.pending_tasks()
+
+    assert(len(tasks)==1)
+    assert(tasks[0]["zone_id"] == 1)
+    assert(tasks[0]["seconds"] == 120)
+
 def test_task(api):
     api.water_zone(2, 240)
     task = api.task(1)
@@ -49,6 +57,20 @@ def test_cancel_task_already_canceled(api):
 
     with pytest.raises(waterbot_api.TaskAlreadyTerminated):
         api.terminate_task(created_task["task_id"])
+
+def test_start_task(api):
+    created_task = api.water_zone(3, 360)
+    started_task = api.start_task(created_task["task_id"])
+
+    created_task["ts_started"] = started_task["ts_started"]
+    assert(created_task == started_task)
+
+def test_start_task_already_started(api):
+    created_task = api.water_zone(3, 360)
+    api.start_task(created_task["task_id"])
+
+    with pytest.raises(waterbot_api.TaskAlreadyStarted):
+        api.start_task(created_task["task_id"])
 
 def test_water_zone(api):
     task = api.water_zone(2, 600)

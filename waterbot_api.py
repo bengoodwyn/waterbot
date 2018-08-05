@@ -28,6 +28,11 @@ class TaskAlreadyTerminated(Exception):
         super().__init__(f"Task '{task_id}' was already terminated")
         self.task_id = task_id
 
+class TaskAlreadyStarted(Exception):
+    def __init__(self, task_id):
+        super().__init__(f"Task '{task_id}' was already started")
+        self.task_id = task_id
+
 class TaskNotCreated(Exception):
     def __init__(self, zone_id, seconds):
         super().__init__(f"Failed to create task to water zone '{zone_id}' for '{seconds}' seconds")
@@ -56,6 +61,9 @@ class WaterbotApi:
     def tasks(self):
         return waterbot_db.tasks(self.conn)
 
+    def pending_tasks(self):
+        return waterbot_db.tasks_pending(self.conn)
+
     def task(self, task_id):
         tasks = waterbot_db.task(self.conn, task_id)
         if len(tasks) != 1:
@@ -66,6 +74,12 @@ class WaterbotApi:
         self.task(task_id)
         if 1 != waterbot_db.task_terminate(self.conn, task_id):
             raise TaskAlreadyTerminated(task_id)
+        return self.task(task_id)
+
+    def start_task(self, task_id):
+        self.task(task_id)
+        if 1 != waterbot_db.task_start(self.conn, task_id):
+            raise TaskAlreadyStarted(task_id)
         return self.task(task_id)
 
     def __validate_watering_time(self, seconds):

@@ -11,36 +11,43 @@ def client():
 
 def test_index_get(client):
     rv = client.get('/')
-    assert b'<title>Waterbot</title>' in rv.data
+    assert(rv.status_code == 200)
+    assert(b'<title>Waterbot</title>' in rv.data)
 
 def test_config_get(client):
     rv = client.get('/api/v0/config')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert("common_gpio" in response)
 
 def test_config_post(client):
     rv = client.post('/api/v0/config')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert("common_gpio" in response)
 
 def test_zones_get(client):
     rv = client.get('/api/v0/zones')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response["1"]["name"] == "Example Zone 1")
 
 def test_zones_post(client):
     rv = client.post('/api/v0/zones')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response["1"]["name"] == "Example Zone 1")
 
 def test_zone_get(client):
     rv = client.get('/api/v0/zone/2')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response["name"] == "Example Zone 2")
     assert(response["seconds"] == 1200)
 
 def test_zone_get(client):
     rv = client.post('/api/v0/zone/3')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response["name"] == "Example Zone 3")
     assert(response["seconds"] == 1800)
@@ -52,6 +59,7 @@ def test_tasks_get(client, mocker):
     db.tasks.return_value = [{"key":"value"}]
 
     rv = client.get('/api/v0/tasks')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response[0]["key"] == "value")
     stub_tasks.assert_called_once_with("foo")
@@ -63,6 +71,7 @@ def test_tasks_post(client, mocker):
     db.tasks.return_value = [{"key":"value"}]
 
     rv = client.get('/api/v0/tasks')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response[0]["key"] == "value")
     stub_tasks.assert_called_once_with("foo")
@@ -74,6 +83,7 @@ def test_task_get(client, mocker):
     db.task.return_value = [{"key":"value"}]
 
     rv = client.get('/api/v0/task/17')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
     assert(response["key"] == "value")
     stub_task.assert_called_once_with("foo", 17)
@@ -85,6 +95,7 @@ def test_task_post(client, mocker):
     db.task.return_value = [{"key":"value"}]
 
     rv = client.post('/api/v0/task/17')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
 
     assert(response["key"] == "value")
@@ -97,6 +108,7 @@ def test_task_not_found(client, mocker):
     db.task.return_value = []
 
     rv = client.post('/api/v0/task/17')
+    assert(rv.status_code == 404)
     response = json.loads(rv.data)
 
     assert("not found" in response["error"])
@@ -111,6 +123,7 @@ def test_cancel_task(client, mocker):
     db.task.return_value = [{"task_id":17}]
 
     rv = client.post('/api/v0/cancel-task/17')
+    assert(rv.status_code == 200)
     response = json.loads(rv.data)
 
     assert(response["task_id"] == 17)
@@ -124,6 +137,7 @@ def test_cancel_task_with_no_effect(client, mocker):
     db.task_terminate.return_value = 0
 
     rv = client.post('/api/v0/cancel-task/17')
+    assert(rv.status_code == 409)
     response = json.loads(rv.data)
 
     assert("not changed" in response["error"])
@@ -138,6 +152,7 @@ def test_water_zone(client, mocker):
     db.task.return_value = [{"task_id":99}]
 
     rv = client.post('/api/v0/water-zone/4/99')
+    assert(rv.status_code == 201)
     response = json.loads(rv.data)
 
     assert(response["task_id"] == 99)
@@ -151,6 +166,7 @@ def test_water_zone_error(client, mocker):
     db.water_zone.return_value = (0, None)
 
     rv = client.post('/api/v0/water-zone/4/99')
+    assert(rv.status_code == 500)
     response = json.loads(rv.data)
 
     assert("Failed to create task" in response["error"])
@@ -158,18 +174,21 @@ def test_water_zone_error(client, mocker):
 
 def test_water_zone_does_not_exist(client, mocker):
     rv = client.post('/api/v0/water-zone/5/99')
+    assert(rv.status_code == 404)
     response = json.loads(rv.data)
 
     assert("not known" in response["error"])
 
 def test_water_zone_too_short(client, mocker):
     rv = client.post('/api/v0/water-zone/4/0')
+    assert(rv.status_code == 400)
     response = json.loads(rv.data)
 
     assert("less than one second" in response["error"])
 
 def test_water_zone_too_long(client, mocker):
     rv = client.post('/api/v0/water-zone/4/3601')
+    assert(rv.status_code == 400)
     response = json.loads(rv.data)
 
     assert("longer than one hour" in response["error"])

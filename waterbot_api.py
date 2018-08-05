@@ -69,5 +69,5 @@ def water_zone_v0(zone_id, seconds):
     conn = get_db()
     rowcount, task_id = db.water_zone(conn, zone_id, seconds)
     if 1 == rowcount:
-        return task_v0(task_id)
-    return jsonify({"error":f"Failed to create task for {zone_id}"})
+        return task_v0(task_id), 201
+    return jsonify({"error":f"Failed to create task for {zone_id}"}), 500

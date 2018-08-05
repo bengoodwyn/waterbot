@@ -1,16 +1,13 @@
 <html>
-<head><title>Waterbot</title></head>
+<head>
+    <title>Waterbot</title>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+</head>
 <body>
-{% for zone in config['WATERBOT'].zones %}
-    <form action="api/v0/water-single-zone" method="POST">
-        <h3>{{ zone }}</h3>
-        {% set pin = config['WATERBOT'].zones[zone].gpio %}
-        {% set default_minutes = config['WATERBOT'].zones[zone].minutes %}
-        <input type="hidden" name="zone" value="{{ pin }}" />
-        <label for="single-zone-minutes-{{ pin }}">Minutes</label>
-        <input type="number" id="single-zone-minutes-{{ pin }}" name="minutes" min="1" value="{{ default_minutes }}" max="60" />
-        <input type="submit" />
-    </form>
-{% endfor %}
+    <div id="zone_list">Loading...</div>
+    <div id="task_queue">Loading...</div>
 </body>
 </html>

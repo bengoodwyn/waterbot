@@ -3,39 +3,39 @@ import waterbot_db
 
 class ZoneNotFound(Exception):
     def __init__(self, zone_id):
-        super().__init__(f"Zone '{zone_id}' not found")
+        super().__init__("Zone '{}' not found".format(zone_id))
         self.zone_id = zone_id
 
 class TooShort(Exception):
     def __init__(self, value, minimum_value):
-        super().__init__(f"'{value}' is less than the minimum value of '{minimum_value}'")
+        super().__init__("'{}' is less than the minimum value of '{}'".format(value, minimum_value))
         self.value = value
         self.minimum_value = minimum_value
 
 class TooLong(Exception):
     def __init__(self, value, maximum_value):
-        super().__init__(f"'{value}' is more than the maximum value of '{maximum_value}'")
+        super().__init__("'{}' is more than the maximum value of '{}'".format(value, maximum_value))
         self.value = value
         self.maximum_value = maximum_value
 
 class TaskNotFound(Exception):
     def __init__(self, task_id):
-        super().__init__(f"Task '{task_id}' was not found")
+        super().__init__("Task '{}' was not found".format(task_id))
         self.task_id = task_id
 
 class TaskAlreadyTerminated(Exception):
     def __init__(self, task_id):
-        super().__init__(f"Task '{task_id}' was already terminated")
+        super().__init__("Task '{}' was already terminated".format(task_id))
         self.task_id = task_id
 
 class TaskAlreadyStarted(Exception):
     def __init__(self, task_id):
-        super().__init__(f"Task '{task_id}' was already started")
+        super().__init__("Task '{}' was already started".format(task_id))
         self.task_id = task_id
 
 class TaskNotCreated(Exception):
     def __init__(self, zone_id, seconds):
-        super().__init__(f"Failed to create task to water zone '{zone_id}' for '{seconds}' seconds")
+        super().__init__("Failed to create task to water zone '{}' for '{}' seconds".format(zone_id, seconds))
         self.zone_id = zone_id
         self.seconds = seconds
 

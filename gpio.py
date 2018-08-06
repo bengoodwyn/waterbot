@@ -2,22 +2,22 @@ import os
 
 def __run_or_die(cmd):
     if 0 != os.system(cmd):
-        raise Exception(f"Failed to run {cmd}")
+        raise Exception("Failed to run {}".format(cmd))
 
 gpio_cmd = os.getenv("GPIO_COMMAND", "gpio")
 
 def mode_out(pin):
-    cmd = f"{gpio_cmd} mode {pin} out"
+    cmd = "{} mode {} out".format(gpio_cmd, pin)
     __run_or_die(cmd)
 
 def mode_in(pin):
-    cmd = f"{gpio_cmd} mode {pin} in"
+    cmd = "{} mode {} in".format(gpio_cmd, pin)
     __run_or_die(cmd)
 
 def on(pin):
-    cmd = f"{gpio_cmd} write {pin} 0"
+    cmd = "{} write {} 0".format(gpio_cmd, pin)
     __run_or_die(cmd)
 
 def off(pin):
-    cmd = f"{gpio_cmd} write {pin} 1"
+    cmd = "{} write {} 1".format(gpio_cmd, pin)
     __run_or_die(cmd)

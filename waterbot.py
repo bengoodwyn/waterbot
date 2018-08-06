@@ -14,7 +14,7 @@ api = waterbot_api.WaterbotApi()
 common = api.config["common_gpio"]
 
 def reset():
-    logger.info(f"waterbot resetting all GPIO pins")
+    logger.info("waterbot resetting all GPIO pins")
     gpio.mode_out(common)
     gpio.off(common)
 
@@ -23,19 +23,19 @@ def reset():
         gpio.off(pin)
 
 active_task_id = None
-logger.info(f"water_worker starting with config {api.config}")
+logger.info("water_worker starting with config {}".format(str(api.config)))
 atexit.register(reset)
 reset()
 while True:
     if active_task_id:
         task = api.task(active_task_id)
         if task["ts_terminated"] != None:
-            logger.info(f"Task was terminated: {task}")
+            logger.info("Task was terminated: {}".format(str(task)))
             gpio.off(common)
             gpio.off(task["zone_id"])
             active_task_id = None
         elif time.time() >= task["ts_started"] + task["seconds"]:
-            logger.info(f"Task ran for long enough: {task}")
+            logger.info("Task ran for long enough: {}".format(str(task)))
             gpio.off(common)
             gpio.off(task["zone_id"])
             api.terminate_task(active_task_id)
@@ -46,7 +46,7 @@ while True:
         if len(pending_tasks) > 0:
             task = pending_tasks[0]
             active_task_id = task["task_id"]
-            logger.info(f"Starting {task}")
+            logger.info("Starting {}".format(str(task)))
             api.start_task(task["task_id"])
             gpio.on(common)
             gpio.on(task["zone_id"])

@@ -16,7 +16,7 @@ def reset_gpio(api):
     gpio.mode_out(common)
     gpio.off(common)
 
-    for pin in api.zones():
+    for pin in sorted(api.zones()):
         gpio.mode_out(pin)
         gpio.off(pin)
 

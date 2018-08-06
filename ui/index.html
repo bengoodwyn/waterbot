@@ -1,6 +1,7 @@
 <html>
 <head>
     <title>Waterbot</title>
+    <link rel="stylesheet" href="/ui/waterbot.css" />
     <script
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
@@ -14,28 +15,29 @@
 </head>
 <body>
     <div id="zones">
-        <table>
-            <thead><th>Zone</th><th>Description</th><th>Seconds</th></thead>
+        <table class="blueTable">
+            <thead><th>Zone</th><th>Description</th><th>Normal Watering Time</th></thead>
             <tbody data-bind="foreach: zones">
                 <tr>
                     <td data-bind="text: zone_id"></td>
                     <td data-bind="text: name"></td>
-                    <td data-bind="text: seconds"></td>
+                    <td data-bind="text: normal_watering_time"></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="tasks">
-        <table>
-            <thead><th>Task</th><th>Zone</th><th>Seconds</th><th>Submitted</th><th>Started</th><th>Terminated</th></thead>
+        <table class="blueTable">
+            <thead><th>Task</th><th>Zone</th><th>Scheduled Length</th><th>Actual Length</th><th>Submitted</th><th>Started</th><th>Terminated</th></thead>
             <tbody data-bind="foreach: tasks">
                 <tr>
                     <td data-bind="text: task_id"></td>
                     <td data-bind="text: zone_id"></td>
-                    <td data-bind="text: seconds"></td>
-                    <td data-bind="text: ts_submitted"></td>
-                    <td data-bind="text: ts_started"></td>
-                    <td data-bind="text: ts_terminated"></td>
+                    <td data-bind="text: scheduled_watering_time"></td>
+                    <td data-bind="text: actual_watering_time"></td>
+                    <td data-bind="text: submitted"></td>
+                    <td data-bind="text: started"></td>
+                    <td data-bind="text: terminated"></td>
                 </tr>
             </tbody>
         </table>

@@ -1,6 +1,6 @@
 import json
 from waterbot_api import *
-from flask import Flask, render_template, jsonify, redirect, g
+from flask import Flask, send_file, jsonify, redirect, g
 
 app = Flask(__name__)
 
@@ -22,11 +22,7 @@ def default():
 
 @app.route('/ui/<document>', methods=['GET'])
 def ui(document):
-    return render_template(document)
-
-@app.route('/', methods=['GET'])
-def index():
-    return render_template('index.html')
+    return send_file("ui/" + document)
 
 @app.route('/api/v0/config', methods=["GET","POST"])
 def config_v0():

@@ -5,9 +5,40 @@
       src="https://code.jquery.com/jquery-3.3.1.min.js"
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"
+      integrity="sha256-owX7sroiO/O1a7h3a4X29A1g3QgqdNvijRQ7V5TH45M="
+      crossorigin="anonymous"></script>
+    <script
+      src="app.js"></script>
 </head>
 <body>
-    <div id="zone_list">Loading...</div>
-    <div id="task_queue">Loading...</div>
+    <div id="zones">
+        <table>
+            <thead><th>Zone</th><th>Description</th><th>Seconds</th></thead>
+            <tbody data-bind="foreach: zones">
+                <tr>
+                    <td data-bind="text: zone_id"></td>
+                    <td data-bind="text: name"></td>
+                    <td data-bind="text: seconds"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="tasks">
+        <table>
+            <thead><th>Task</th><th>Zone</th><th>Seconds</th><th>Submitted</th><th>Started</th><th>Terminated</th></thead>
+            <tbody data-bind="foreach: tasks">
+                <tr>
+                    <td data-bind="text: task_id"></td>
+                    <td data-bind="text: zone_id"></td>
+                    <td data-bind="text: seconds"></td>
+                    <td data-bind="text: ts_submitted"></td>
+                    <td data-bind="text: ts_started"></td>
+                    <td data-bind="text: ts_terminated"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

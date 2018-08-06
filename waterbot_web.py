@@ -1,6 +1,6 @@
 import json
 from waterbot_api import *
-from flask import Flask, render_template, jsonify, g
+from flask import Flask, render_template, jsonify, redirect, g
 
 app = Flask(__name__)
 
@@ -15,6 +15,14 @@ def get_api():
 @app.teardown_appcontext
 def teardown_api(exception):
     api = None
+
+@app.route('/', methods=['GET'])
+def default():
+    return redirect("/ui/index.html", code=302)
+
+@app.route('/ui/<document>', methods=['GET'])
+def ui(document):
+    return render_template(document)
 
 @app.route('/', methods=['GET'])
 def index():

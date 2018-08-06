@@ -15,10 +15,20 @@ def client():
 
     ctx.pop()
 
-def test_index_get(client):
+def test_default_get(client):
     rv = client.get('/')
+    assert(rv.status_code == 302)
+    assert('/ui/index.html' in rv.data.decode('utf-8'))
+
+def test_index_get(client):
+    rv = client.get('/ui/index.html')
     assert(rv.status_code == 200)
     assert('<title>Waterbot</title>' in rv.data.decode('utf-8'))
+
+def test_app_get(client):
+    rv = client.get('/ui/app.js')
+    assert(rv.status_code == 200)
+    assert('document' in rv.data.decode('utf-8'))
 
 def test_config_get(client):
     rv = client.get('/api/v0/config')

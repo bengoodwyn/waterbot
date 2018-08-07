@@ -77,6 +77,18 @@ def test_start_task_already_terminated_no_effect():
     waterbot_db.task_terminate(conn, 1)
     assert(0 == waterbot_db.task_start(conn, 1))
 
+def test_active_tasks_includes_started_task():
+    waterbot_db.water_zone(conn, 6, 60)
+    waterbot_db.water_zone(conn, 7, 120)
+    waterbot_db.water_zone(conn, 8, 180)
+    waterbot_db.task_start(conn, 1)
+
+    pending_tasks = waterbot_db.tasks_active(conn)
+
+    assert(len(pending_tasks) == 1)
+    assert(pending_tasks[0]["zone_id"] == 6)
+    assert(pending_tasks[0]["seconds"] == 60)
+
 def test_pending_tasks_does_not_include_started_task():
     waterbot_db.water_zone(conn, 6, 60)
     waterbot_db.water_zone(conn, 7, 120)

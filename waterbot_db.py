@@ -34,6 +34,11 @@ def tasks_pending(conn):
     c.execute("SELECT {} FROM tasks WHERE ts_started IS NULL AND ts_terminated IS NULL;".format(','.join(__task_fields)))
     return list(map(__task_row_to_dict, c.fetchall()))
 
+def tasks_active(conn):
+    c = conn.cursor()
+    c.execute("SELECT {} FROM tasks WHERE ts_started IS NOT NULL AND ts_terminated IS NULL;".format(','.join(__task_fields)))
+    return list(map(__task_row_to_dict, c.fetchall()))
+
 def task(conn, task_id):
     c = conn.cursor()
     c.execute("SELECT {} FROM tasks WHERE task_id=?;".format(','.join(__task_fields)), (task_id,))

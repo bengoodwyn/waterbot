@@ -15,29 +15,55 @@
 </head>
 <body>
     <div id="zones">
+        <div id="slider">
+            <input type="range" min="0" max="200" class="slider" data-bind="value: ratio" />
+            <span data-bind="text: ratio"></span><span>%</span>
+            <button data-bind="click: waterAllZones">Water All Zones</button>
+        </div>
         <table class="blueTable">
-            <thead><th>Zone</th><th>Description</th><th>Normal Watering Time</th></thead>
+            <thead><th>Zone</th><th>Description</th><th>Adjusted Watering Time</th></thead>
             <tbody data-bind="foreach: zones">
                 <tr>
                     <td data-bind="text: zone_id"></td>
                     <td data-bind="text: name"></td>
-                    <td data-bind="text: normal_watering_time"></td>
+                    <td data-bind="text: adjusted_watering_time"></td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <div id="tasks">
+    <div id="active-tasks" data-bind="if: any_active">
         <table class="blueTable">
-            <thead><th>Task</th><th>Zone</th><th>Scheduled Length</th><th>Actual Length</th><th>Submitted</th><th>Started</th><th>Terminated</th></thead>
-            <tbody data-bind="foreach: tasks">
+            <thead><th>Task</th><th>Zone</th><th>Scheduled Length</th><th>Submitted</th><th>Started</th></thead>
+            <tbody data-bind="foreach: active_tasks">
                 <tr>
                     <td data-bind="text: task_id"></td>
                     <td data-bind="text: zone_id"></td>
                     <td data-bind="text: scheduled_watering_time"></td>
-                    <td data-bind="text: actual_watering_time"></td>
                     <td data-bind="text: submitted"></td>
-                    <td data-bind="text: started"></td>
-                    <td data-bind="text: terminated"></td>
+                    <td>
+                        <span data-bind="text: started"></span>
+                        <span data-bind="if: !ts_terminated">
+                            <button data-bind="click: $parent.cancelTask">Cancel</button>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="pending-tasks" data-bind="if: any_pending">
+        <table class="blueTable">
+            <thead><th>Task</th><th>Zone</th><th>Scheduled Length</th><th>Submitted</th></thead>
+            <tbody data-bind="foreach: pending_tasks">
+                <tr>
+                    <td data-bind="text: task_id"></td>
+                    <td data-bind="text: zone_id"></td>
+                    <td data-bind="text: scheduled_watering_time"></td>
+                    <td>
+                        <span data-bind="text: submitted"></span>
+                        <span data-bind="if: !ts_terminated">
+                            <button data-bind="click: $parent.cancelTask">Cancel</button>
+                        </span>
+                    </td>
                 </tr>
             </tbody>
         </table>

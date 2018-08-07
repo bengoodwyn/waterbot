@@ -44,6 +44,14 @@ def zone(zone_id):
 def tasks_v0():
     return jsonify(get_api().tasks())
 
+@app.route('/api/v0/active-tasks', methods=["GET","POST"])
+def active_tasks_v0():
+    return jsonify(get_api().active_tasks())
+
+@app.route('/api/v0/pending-tasks', methods=["GET","POST"])
+def pending_tasks_v0():
+    return jsonify(get_api().pending_tasks())
+
 @app.route('/api/v0/task/<int:task_id>', methods=["GET","POST"])
 def task_v0(task_id):
     try:

@@ -88,6 +88,19 @@ def test_tasks_post(client):
     assert(response[0]["zone_id"] == 4)
     assert(response[0]["seconds"] == 77)
 
+def test_pending_tasks_get(client):
+    rv = client.get('/api/v0/pending-tasks')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data.decode('utf-8'))
+    assert(response[0]["zone_id"] == 4)
+    assert(response[0]["seconds"] == 77)
+
+def test_active_tasks_post(client):
+    rv = client.post('/api/v0/active-tasks')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data.decode('utf-8'))
+    assert(len(response) == 0)
+
 def test_task_get(client):
     rv = client.get('/api/v0/task/1')
     assert(rv.status_code == 200)

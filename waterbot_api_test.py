@@ -33,6 +33,15 @@ def test_pending_tasks(api):
     assert(tasks[0]["zone_id"] == 1)
     assert(tasks[0]["seconds"] == 120)
 
+def test_active_tasks(api):
+    api.water_zone(1, 120)
+    api.start_task(1)
+    tasks = api.active_tasks()
+
+    assert(len(tasks)==1)
+    assert(tasks[0]["zone_id"] == 1)
+    assert(tasks[0]["seconds"] == 120)
+
 def test_task(api):
     api.water_zone(2, 240)
     task = api.task(1)

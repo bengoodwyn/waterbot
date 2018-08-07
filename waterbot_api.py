@@ -64,6 +64,9 @@ class WaterbotApi:
     def pending_tasks(self):
         return waterbot_db.tasks_pending(self.conn)
 
+    def active_tasks(self):
+        return waterbot_db.tasks_active(self.conn)
+
     def task(self, task_id):
         tasks = waterbot_db.task(self.conn, task_id)
         if len(tasks) != 1:

@@ -24,12 +24,10 @@
         <table class="blueTable">
             <thead>
             <th>Zone</th>
-            <th>Description</th>
-            <th>Adjusted Watering Time</th>
+            <th>Watering Time</th>
             </thead>
             <tbody data-bind="foreach: zones">
             <tr>
-                <td data-bind="text: zone_id"></td>
                 <td data-bind="text: name"></td>
                 <td>
                     <span data-bind="text: adjusted_watering_time"></span>
@@ -45,7 +43,6 @@
         <legend>Currently Watering</legend>
         <table class="blueTable">
             <thead>
-            <th>Task</th>
             <th>Zone</th>
             <th>Scheduled Length</th>
             <th>Submitted</th>
@@ -53,8 +50,7 @@
             </thead>
             <tbody data-bind="foreach: active_tasks">
             <tr>
-                <td data-bind="text: task_id"></td>
-                <td data-bind="text: zone_id"></td>
+                <td data-bind="text: name"></td>
                 <td data-bind="text: scheduled_watering_time"></td>
                 <td data-bind="text: submitted"></td>
                 <td>
@@ -73,15 +69,13 @@
         <legend>Pending Watering</legend>
         <table class="blueTable">
             <thead>
-            <th>Task</th>
             <th>Zone</th>
             <th>Scheduled Length</th>
             <th>Submitted</th>
             </thead>
             <tbody data-bind="foreach: pending_tasks">
             <tr>
-                <td data-bind="text: task_id"></td>
-                <td data-bind="text: zone_id"></td>
+                <td data-bind="text: name"></td>
                 <td data-bind="text: scheduled_watering_time"></td>
                 <td>
                     <span data-bind="text: submitted"></span>

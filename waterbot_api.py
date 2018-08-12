@@ -50,6 +50,13 @@ class WaterbotApi:
         if self.conn:
             self.conn.close()
 
+    def __add_zone_names_to_task(self, task):
+        task["name"] = self.zone(task["zone_id"])["name"]
+        return task
+
+    def __tasks_with_zone_names(self, tasks):
+        return list(map(self.__add_zone_names_to_task, tasks))
+
     def zones(self):
         return self.config['zones']
 
@@ -60,13 +67,13 @@ class WaterbotApi:
         return all_zones[str(zone_id)]
 
     def tasks(self):
-        return waterbot_db.tasks(self.conn)
+        return self.__tasks_with_zone_names(waterbot_db.tasks(self.conn))
 
     def pending_tasks(self):
-        return waterbot_db.tasks_pending(self.conn)
+        return self.__tasks_with_zone_names(waterbot_db.tasks_pending(self.conn))
 
     def active_tasks(self):
-        return waterbot_db.tasks_active(self.conn)
+        return self.__tasks_with_zone_names(waterbot_db.tasks_active(self.conn))
 
     def task(self, task_id):
         tasks = waterbot_db.task(self.conn, task_id)

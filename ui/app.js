@@ -45,18 +45,30 @@ function ui_tasks(api_tasks) {
     return tasks
 }
 
-function ui_zones(api_zones, ratio) {
+function task_for_zone(zone_id, tasks) {
+    for (var n in tasks) {
+        task = tasks[n]
+        if (zone_id == task["zone_id"]) {
+            return task
+        }
+    }
+    return null
+}
+
+function ui_zones(api_zones, ratio, pending_tasks, active_tasks) {
     var zones = []
     for (var zone_id in api_zones) {
         zone = api_zones[zone_id]
         var adjusted_seconds = Math.max(1, Math.min(zone["seconds"] * ratio / 100, 3600))
+
         zones.push({
             "zone_id": zone_id,
             "name": zone["name"],
             "seconds": zone["seconds"],
             "normal_watering_time": human_duration(zone["seconds"]),
             "adjusted_watering_time": human_duration(adjusted_seconds),
-            "adjusted_seconds": adjusted_seconds
+            "adjusted_seconds": adjusted_seconds,
+            "idle": (null==task_for_zone(zone_id, pending_tasks)) && (null==task_for_zone(zone_id, active_tasks))
         })
     }
     return zones
@@ -75,12 +87,14 @@ function WaterbotViewModel() {
     self.zones = ko.observable()
     self.any_pending = ko.observable()
     self.any_active = ko.observable()
- 
+    self.completely_idle = ko.observable()
+
     ko.computed(function() { self.pending_tasks(ui_tasks(self.api_pending_tasks())) })
     ko.computed(function() { self.active_tasks(ui_tasks(self.api_active_tasks())) })
-    ko.computed(function() { self.zones(ui_zones(self.api_zones(), self.ratio())) })
+    ko.computed(function() { self.zones(ui_zones(self.api_zones(), self.ratio(), self.pending_tasks(), self.active_tasks())) })
     ko.computed(function() { self.any_pending(non_empty(self.api_pending_tasks())) })
     ko.computed(function() { self.any_active(non_empty(self.api_active_tasks())) })
+    ko.computed(function() { self.completely_idle(!self.any_pending() && !self.any_active())})
 
     self.refresh = function() {
         $.post("/api/v0/active-tasks", function(data) {self.api_active_tasks(data)})

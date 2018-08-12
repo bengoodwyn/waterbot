@@ -19,7 +19,7 @@
         <legend>Manual Watering Controls</legend>
         <div id="slider">
             <input type="number" min="0" max="200" data-bind="value: ratio"/><span>%</span>
-            <button data-bind="click: waterAllZones">Water All Zones</button>
+            <span data-bind="if: completely_idle"><button data-bind="click: waterAllZones">Water All Zones</button></span>
         </div>
         <table class="blueTable">
             <thead>
@@ -31,7 +31,9 @@
                 <td data-bind="text: name"></td>
                 <td>
                     <span data-bind="text: adjusted_watering_time"></span>
-                    <button data-bind="click: $parent.waterZone">Water Single Zone</button>
+                    <span data-bind="if: idle">
+                        <button data-bind="click: $parent.waterZone">Water Single Zone</button>
+                    </span>
                 </td>
             </tr>
             </tbody>

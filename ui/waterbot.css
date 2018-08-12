@@ -1,3 +1,10 @@
+.footer {
+    padding-top: 50px;
+    opacity: 0.75;
+    font-size: smaller;
+    text-align: right;
+}
+
 table.blueTable {
   border: 1px solid #1C6EA4;
   background-color: #EEEEEE;

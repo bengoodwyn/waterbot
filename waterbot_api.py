@@ -1,5 +1,6 @@
 import json
 import waterbot_db
+import os.path
 
 class ZoneNotFound(Exception):
     def __init__(self, zone_id):
@@ -40,7 +41,7 @@ class TaskNotCreated(Exception):
         self.seconds = seconds
 
 class WaterbotApi:
-    def __init__(self, config_filename='config.json', database_filename='waterbot.db'):
+    def __init__(self, config_filename='config.json' if os.path.isfile('config.json') else 'test_config.json', database_filename='waterbot.db'):
         with open(config_filename) as f:
             self.config = json.load(f)
         self.conn = waterbot_db.get_db(database_filename)

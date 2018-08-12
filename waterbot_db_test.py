@@ -130,3 +130,18 @@ def test_tasks_includes_started_and_terminated_tasks():
     assert(pending_tasks[0]["zone_id"] == 6)
     assert(pending_tasks[1]["zone_id"] == 7)
     assert(pending_tasks[2]["zone_id"] == 8)
+
+def test_set_get_option():
+    waterbot_db.set_option(conn, "key","value")
+    assert("value" == waterbot_db.get_option(conn, "key"))
+
+def test_replace_option():
+    waterbot_db.set_option(conn, "key","value1")
+    waterbot_db.set_option(conn, "key","value2")
+    assert("value2" == waterbot_db.get_option(conn, "key"))
+
+def test_get_not_existing_option():
+    assert(None == waterbot_db.get_option(conn, "foo"))
+
+def test_get_not_existing_option_default_value():
+    assert ("bar" == waterbot_db.get_option(conn, "foo", "bar"))

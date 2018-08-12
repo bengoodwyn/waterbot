@@ -9,6 +9,10 @@ ts_terminated INTEGER,
 zone_id INTEGER NOT NULL,
 seconds TINYINT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS options (
+key TEXT PRIMARY KEY NOT NULL,
+value TEXT NOT NULL
+);
 """
 
 __task_fields = [ "task_id", "zone_id", "ts_submitted", "ts_started", "ts_terminated", "seconds" ]
@@ -21,7 +25,7 @@ def __task_row_to_dict(row):
 
 def get_db(path):
     db = sqlite3.connect(path)
-    db.execute(schema)
+    db.executescript(schema)
     return db
 
 def tasks(conn):
@@ -61,3 +65,18 @@ def water_zone(conn, zone_id, seconds):
     results = c.execute("INSERT INTO tasks (zone_id, seconds) VALUES (?,?);", (zone_id,seconds))
     conn.commit()
     return results.rowcount, results.lastrowid if 1==results.rowcount else None
+
+def set_option(conn, key, value):
+    c = conn.cursor()
+    results = c.execute("INSERT OR REPLACE INTO options (key, value) VALUES (?,?);", (key,value))
+    conn.commit()
+    return results.rowcount, results.lastrowid if 1==results.rowcount else None
+
+def get_option(conn, key, default=None):
+    c = conn.cursor()
+    results = c.execute("SELECT value FROM options WHERE key=?", (key,))
+    result = results.fetchone()
+    if result:
+        return result[0]
+    else:
+        return default

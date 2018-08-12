@@ -1,72 +1,98 @@
 <html>
 <head>
     <title>Waterbot</title>
-    <link rel="stylesheet" href="/ui/waterbot.css" />
+    <link rel="stylesheet" href="/ui/waterbot.css"/>
     <script
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
     <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"
-      integrity="sha256-owX7sroiO/O1a7h3a4X29A1g3QgqdNvijRQ7V5TH45M="
-      crossorigin="anonymous"></script>
+            src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"
+            integrity="sha256-owX7sroiO/O1a7h3a4X29A1g3QgqdNvijRQ7V5TH45M="
+            crossorigin="anonymous"></script>
     <script
-      src="app.js"></script>
+            src="app.js"></script>
 </head>
 <body>
-    <div id="zones">
+<div id="zones">
+    <fieldset>
+        <legend>Manual Watering Controls</legend>
         <div id="slider">
-            <input type="range" min="0" max="200" class="slider" data-bind="value: ratio" />
-            <span data-bind="text: ratio"></span><span>%</span>
+            <input type="number" min="0" max="200" data-bind="value: ratio"/><span>%</span>
             <button data-bind="click: waterAllZones">Water All Zones</button>
         </div>
         <table class="blueTable">
-            <thead><th>Zone</th><th>Description</th><th>Adjusted Watering Time</th></thead>
+            <thead>
+            <th>Zone</th>
+            <th>Description</th>
+            <th>Adjusted Watering Time</th>
+            </thead>
             <tbody data-bind="foreach: zones">
-                <tr>
-                    <td data-bind="text: zone_id"></td>
-                    <td data-bind="text: name"></td>
-                    <td data-bind="text: adjusted_watering_time"></td>
-                </tr>
+            <tr>
+                <td data-bind="text: zone_id"></td>
+                <td data-bind="text: name"></td>
+                <td>
+                    <span data-bind="text: adjusted_watering_time"></span>
+                    <button data-bind="click: $parent.waterZone">Water Single Zone</button>
+                </td>
+            </tr>
             </tbody>
         </table>
-    </div>
-    <div id="active-tasks" data-bind="if: any_active">
+    </fieldset>
+</div>
+<div id="active-tasks" data-bind="if: any_active">
+    <fieldset>
+        <legend>Currently Watering</legend>
         <table class="blueTable">
-            <thead><th>Task</th><th>Zone</th><th>Scheduled Length</th><th>Submitted</th><th>Started</th></thead>
+            <thead>
+            <th>Task</th>
+            <th>Zone</th>
+            <th>Scheduled Length</th>
+            <th>Submitted</th>
+            <th>Started</th>
+            </thead>
             <tbody data-bind="foreach: active_tasks">
-                <tr>
-                    <td data-bind="text: task_id"></td>
-                    <td data-bind="text: zone_id"></td>
-                    <td data-bind="text: scheduled_watering_time"></td>
-                    <td data-bind="text: submitted"></td>
-                    <td>
-                        <span data-bind="text: started"></span>
-                        <span data-bind="if: !ts_terminated">
+            <tr>
+                <td data-bind="text: task_id"></td>
+                <td data-bind="text: zone_id"></td>
+                <td data-bind="text: scheduled_watering_time"></td>
+                <td data-bind="text: submitted"></td>
+                <td>
+                    <span data-bind="text: started"></span>
+                    <span data-bind="if: !ts_terminated">
                             <button data-bind="click: $parent.cancelTask">Cancel</button>
                         </span>
-                    </td>
-                </tr>
+                </td>
+            </tr>
             </tbody>
         </table>
-    </div>
-    <div id="pending-tasks" data-bind="if: any_pending">
+    </fieldset>
+</div>
+<div id="pending-tasks" data-bind="if: any_pending">
+    <fieldset>
+        <legend>Pending Watering</legend>
         <table class="blueTable">
-            <thead><th>Task</th><th>Zone</th><th>Scheduled Length</th><th>Submitted</th></thead>
+            <thead>
+            <th>Task</th>
+            <th>Zone</th>
+            <th>Scheduled Length</th>
+            <th>Submitted</th>
+            </thead>
             <tbody data-bind="foreach: pending_tasks">
-                <tr>
-                    <td data-bind="text: task_id"></td>
-                    <td data-bind="text: zone_id"></td>
-                    <td data-bind="text: scheduled_watering_time"></td>
-                    <td>
-                        <span data-bind="text: submitted"></span>
-                        <span data-bind="if: !ts_terminated">
+            <tr>
+                <td data-bind="text: task_id"></td>
+                <td data-bind="text: zone_id"></td>
+                <td data-bind="text: scheduled_watering_time"></td>
+                <td>
+                    <span data-bind="text: submitted"></span>
+                    <span data-bind="if: !ts_terminated">
                             <button data-bind="click: $parent.cancelTask">Cancel</button>
                         </span>
-                    </td>
-                </tr>
+                </td>
+            </tr>
             </tbody>
         </table>
-    </div>
+    </fieldset>
+</div>
 </body>
 </html>

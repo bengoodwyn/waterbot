@@ -99,6 +99,14 @@ function WaterbotViewModel() {
             })
     }
 
+    self.waterZone = function(zone) {
+        $.post("/api/v0/water-zone/"+zone["zone_id"]+"/"+zone["adjusted_seconds"])
+            .fail(function(xhr, status, error) {
+                alert(xhr.responseText)
+            })
+            .always(self.refresh)
+    }
+
     self.waterAllZones = function() {
         zones = self.zones()
         var pending = zones.length

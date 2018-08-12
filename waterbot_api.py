@@ -108,3 +108,9 @@ class WaterbotApi:
         if 1 != rowsaffected:
             raise TaskNotCreated(zone_id, seconds)
         return self.task(task_id)
+
+    def darksky_api_key(self, new_value=None):
+        if new_value:
+            waterbot_db.set_option(self.conn, "darksky_api_key", new_value)
+        else:
+            return waterbot_db.get_option(self.conn, "darksky_api_key")

@@ -111,3 +111,10 @@ def test_water_zone_too_short(api):
 def test_water_zone_too_long(api):
     with pytest.raises(waterbot_api.TooLong):
         api.water_zone(1, 3601)
+
+def test_darksky_default(api):
+    assert(None == api.darksky_api_key())
+
+def test_darksky_set(api):
+    api.darksky_api_key("12345")
+    assert("12345"==api.darksky_api_key())

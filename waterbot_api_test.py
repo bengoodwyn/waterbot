@@ -113,8 +113,8 @@ def test_water_zone_too_long(api):
         api.water_zone(1, 3601)
 
 def test_darksky_default(api):
-    assert(None == api.darksky_api_key())
+    assert(None == api.option("darksky_api_key"))
 
 def test_darksky_set(api):
-    api.darksky_api_key("12345")
-    assert("12345"==api.darksky_api_key())
+    api.option("darksky_api_key","12345")
+    assert("12345"==api.option("darksky_api_key"))

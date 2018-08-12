@@ -88,6 +88,8 @@ function WaterbotViewModel() {
     self.any_pending = ko.observable()
     self.any_active = ko.observable()
     self.completely_idle = ko.observable()
+    self.darksky_api_key = ko.observable()
+    self.gps_coordinates = ko.observable()
 
     ko.computed(function() { self.pending_tasks(ui_tasks(self.api_pending_tasks())) })
     ko.computed(function() { self.active_tasks(ui_tasks(self.api_active_tasks())) })
@@ -140,7 +142,25 @@ function WaterbotViewModel() {
         }
     }
 
+    self.updateDarkskyApiKey = function() {
+        $.post("/api/v0/option/darksky_api_key?value=" + self.darksky_api_key())
+            .fail(function(xhr, status, error) {
+                alert(xhr.responseText)
+            })
+            .always(self.refresh)
+    }
+
+    self.updateGpsCoordinates = function() {
+        $.post("/api/v0/option/gps_coordinates?value=" + self.gps_coordinates())
+            .fail(function(xhr, status, error) {
+                alert(xhr.responseText)
+            })
+            .always(self.refresh)
+    }
+
     $.post("/api/v0/zones", function(data) {self.api_zones(data)})
+    $.post("/api/v0/option/darksky_api_key", function(data) {self.darksky_api_key(data?data:"")})
+    $.post("/api/v0/option/gps_coordinates", function(data) {self.gps_coordinates(data?data:"")})
     self.refresh()
     setInterval(function(){self.refresh()}, 15000)
 }

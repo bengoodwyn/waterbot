@@ -174,3 +174,29 @@ def test_water_zone_too_long(client):
     assert(rv.status_code == 400)
     response = json.loads(rv.data.decode('utf-8'))
     assert("error" in response)
+
+def test_get_option(client):
+    client.get('/api/v0/option/foo?value=bar')
+    rv = client.get('/api/v0/option/foo')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data.decode('utf-8'))
+    assert(response == "bar")
+
+def test_post_option(client):
+    client.post('/api/v0/option/foo?value=bar')
+    rv = client.post('/api/v0/option/foo')
+    assert(rv.status_code == 200)
+    response = json.loads(rv.data.decode('utf-8'))
+    assert(response == "bar")
+
+def test_get_option_default(client):
+    rv = client.get('/api/v0/option/foo')
+    assert (rv.status_code == 200)
+    response = json.loads(rv.data.decode('utf-8'))
+    assert (response == None)
+
+def test_post_option_default(client):
+    rv = client.post('/api/v0/option/foo')
+    assert (rv.status_code == 200)
+    response = json.loads(rv.data.decode('utf-8'))
+    assert (response == None)

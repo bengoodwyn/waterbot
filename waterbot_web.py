@@ -1,6 +1,6 @@
 import json
 from waterbot_api import *
-from flask import Flask, send_file, jsonify, redirect, g
+from flask import Flask, send_file, jsonify, redirect, g, request
 
 app = Flask(__name__)
 
@@ -83,3 +83,13 @@ def water_zone_v0(zone_id, seconds):
         return jsonify({"error":str(e)}), 400
     except TaskNotCreated as e:
         return jsonify({"error":str(e)}), 500
+
+@app.route('/api/v0/option/<key>', methods=["GET","POST"])
+def option_v0(key):
+    value = request.args.get("value")
+    if value:
+        get_api().option(key, value)
+        return jsonify({}), 200
+    else:
+        value = get_api().option(key)
+        return jsonify(value), 200

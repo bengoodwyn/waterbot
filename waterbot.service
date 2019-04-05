@@ -1,0 +1,13 @@
+[Unit]
+Description=Waterbot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/waterbot
+ExecStart=/usr/bin/python3 waterbot.py
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Waterbot Web Services
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/waterbot
+Environment=FLASK_APP=waterbot_web.py
+ExecStart=/usr/bin/python3 -m flask run --host 0.0.0.0
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
